@@ -4,7 +4,7 @@ set -euo pipefail
 # Verzeichnisse sicherstellen (Volumes koennen leer gemountet sein)
 mkdir -p "$HOME/.config/opencode" "$HOME/.config/gh" \
          "$HOME/.local/share/opencode" "$HOME/.local/bin" \
-         "$HOME/.npm-global/bin" "$HOME/go/pkg" \
+         "$HOME/.npm-global/bin" "$HOME/go/pkg" "$HOME/.bundle" \
          "${CLAUDE_CONFIG_DIR:-$HOME/.claude}"
 
 # --- Vorlagen aus config/ in die Volumes legen ------------------------

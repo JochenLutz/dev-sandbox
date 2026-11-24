@@ -221,6 +221,8 @@ AUTH
         echo "  go:                $(go version 2>/dev/null || echo nicht-installiert)"
         echo "  node:              $(node --version 2>/dev/null || echo nicht-installiert)"
         echo "  python:            $(python --version 2>/dev/null || echo nicht-installiert)"
+        echo "  ruby:              $(ruby --version 2>/dev/null || echo nicht-installiert)"
+        echo "  rails:             $(rails --version 2>/dev/null || echo nicht-installiert)"
         echo "  /work:             $(ls -1 /work 2>/dev/null | wc -l | tr -d " ") Eintraege"
         echo "  Befehle (Quelle):  $(ls -1 /opt/agent-commands/*.md 2>/dev/null | wc -l | tr -d " ")"
         echo "    -> opencode:     $(ls -1 $HOME/.config/opencode/commands/*.md 2>/dev/null | wc -l | tr -d " ")"

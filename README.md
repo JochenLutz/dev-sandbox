@@ -10,23 +10,23 @@ Mac, nur die Werkzeugkette und die Agenten laufen im Container.
 ```
 sandbox/
 ├── sandbox.sh              Start- und Steuerskript (macOS, Linux)
-├── sandbox.ps1             dasselbe fuer Windows (PowerShell)
-├── sandbox.bat             Starthilfe fuer die Eingabeaufforderung
+├── sandbox.ps1             dasselbe für Windows (PowerShell)
+├── sandbox.bat             Starthilfe für die Eingabeaufforderung
 ├── compose.yaml            Dienstdefinition, Mounts, Volumes, Grenzen
-├── .env                    persoenliche Einstellungen (nicht ins Git)
+├── .env                    persönliche Einstellungen (nicht ins Git)
 ├── .env.example            Vorlage mit allen Schaltern
 ├── docker/
 │   ├── Dockerfile          Image: Debian + Go/Node/Python + opencode
-│   ├── entrypoint.sh       Startlogik (Git-Identitaet, Verzeichnisse)
-│   └── bashrc.d/sandbox.sh Begruessung und Prompt im Container
-├── .gitattributes          haelt LF-Zeilenenden fuer den Container
+│   ├── entrypoint.sh       Startlogik (Git-Identität, Verzeichnisse)
+│   └── bashrc.d/sandbox.sh Begrüßung und Prompt im Container
+├── .gitattributes          hält LF-Zeilenenden für den Container
 ├── config/
-│   ├── commands/           die geteilten Befehle - eine Quelle fuer beide
+│   ├── commands/           die geteilten Befehle - eine Quelle für beide
 │   │   ├── plan-item.md
 │   │   └── implement-item.md
-│   ├── skills/             duenne SKILL.md-Huellen auf dieselben Texte
+│   ├── skills/             dünne SKILL.md-Hüllen auf dieselben Texte
 │   ├── opencode/opencode.json   Konfiguration inkl. GitHub-MCP-Server
-│   └── claude/settings.json Vorlage fuer Claude Code
+│   └── claude/settings.json Vorlage für Claude Code
 └── workspace/              Projekte -> im Container unter /work
 ```
 
@@ -51,7 +51,7 @@ cd $HOME\Desktop\sandbox
 ```
 
 In der Eingabeaufforderung oder per Doppelklick tut es `sandbox.bat`; die Datei
-reicht alles an `sandbox.ps1` weiter und umgeht die Ausfuehrungsrichtlinie.
+reicht alles an `sandbox.ps1` weiter und umgeht die Ausführungsrichtlinie.
 
 Beim ersten Aufruf wird das Image gebaut (einige Minuten). Danach landet man in
 einer Shell im Container, im Verzeichnis `/work`. Dort:
@@ -64,13 +64,13 @@ opencode
 
 Zwei Wege, beide sind vorbereitet:
 
-* **API-Key**: `ANTHROPIC_API_KEY=sk-ant-...` in die `.env`. Der Schluessel wird
+* **API-Key**: `ANTHROPIC_API_KEY=sk-ant-...` in die `.env`. Der Schlüssel wird
   als Umgebungsvariable in den Container gereicht und liegt nicht im Image.
 * **Anmeldung im TUI**: `.env`-Eintrag leer lassen, `opencode` starten und dort
   `/connect` eingeben. Die Zugangsdaten landen in `~/.local/share/opencode/`
-  im Volume `opencode-data` und ueberleben Neustarts und Rebuilds.
-  Oeffnet der Anmeldevorgang einen Browser-Link, diesen auf dem Mac oeffnen und
-  den Code zurueck in den Container kopieren.
+  im Volume `opencode-data` und überleben Neustarts und Rebuilds.
+  Öffnet der Anmeldevorgang einen Browser-Link, diesen auf dem Mac öffnen und
+  den Code zurück in den Container kopieren.
 
 Modellauswahl im TUI mit `/models`.
 
@@ -135,7 +135,7 @@ Owner und Nummer stehen in der Board-URL:
 heißen wie die Spalten auf dem Board.
 
 Die mitgelieferten Befehle arbeiten derzeit nur mit Issues und werten diese
-Variablen nicht aus - sie stehen bereit, falls spaeter ein Board dazukommt.
+Variablen nicht aus - sie stehen bereit, falls später ein Board dazukommt.
 
 ## Die beiden Agenten
 
@@ -144,7 +144,7 @@ Variablen nicht aus - sie stehen bereit, falls spaeter ein Board dazukommt.
 | opencode    | `opencode`         | `/connect` im TUI oder `ANTHROPIC_API_KEY` | `~/.config/opencode`, `~/.local/share/opencode` |
 | Claude Code | `claude`           | `/login` im TUI oder `ANTHROPIC_API_KEY` | `~/.claude` (`CLAUDE_CONFIG_DIR`) |
 
-Von aussen geht es auch direkt:
+Von außen geht es auch direkt:
 
 ```bash
 ./sandbox.sh opencode
@@ -154,26 +154,26 @@ Von aussen geht es auch direkt:
 
 Welcher Agent bei einem blanken `./sandbox.sh` startet, steht in der `.env`:
 `DEFAULT_ENTRY=shell | opencode | claude`. Voreingestellt ist `shell`, damit
-beide gleichberechtigt zur Verfuegung stehen.
+beide gleichberechtigt zur Verfügung stehen.
 
-Einzeln abschalten laesst sich jeder ueber `INSTALL_OPENCODE` und
+Einzeln abschalten lässt sich jeder über `INSTALL_OPENCODE` und
 `INSTALL_CLAUDE` in der `.env`; danach `./sandbox.sh rebuild`.
 
 ### Anmeldung ohne Browser im Container
 
-Beide melden sich normalerweise ueber eine Rueckleitung an `localhost` an.
+Beide melden sich normalerweise über eine Rückleitung an `localhost` an.
 Kommt die im Container nicht an, zeigt der Browser auf dem Mac einen Code, den
-man im TUI einfuegt.
+man im TUI einfügt.
 
 Die Anmeldedaten liegen in Docker-Volumes (`opencode-data`, `claude-data`),
-nicht auf dem Mac. Sie ueberstehen Neustarts und `rebuild`, verschwinden aber
+nicht auf dem Mac. Sie überstehen Neustarts und `rebuild`, verschwinden aber
 bei `./sandbox.sh destroy`.
 
-### Konfigurationsvorlage fuer Claude Code
+### Konfigurationsvorlage für Claude Code
 
 `config/claude/settings.json` ist eine Vorlage. Da im selben Verzeichnis auch
-die Anmeldedaten liegen, wird sie nicht dauerhaft eingehaengt, sondern beim
-ersten Start hineinkopiert. Nach einer Aenderung:
+die Anmeldedaten liegen, wird sie nicht dauerhaft eingehängt, sondern beim
+ersten Start hineinkopiert. Nach einer Änderung:
 
 ```bash
 ./sandbox.sh reseed
@@ -183,7 +183,7 @@ Oder `SEED_OVERWRITE=1` in der `.env`, dann geschieht das bei jedem Start.
 
 ### GitHub-MCP bei beiden
 
-opencode bekommt den GitHub-MCP-Server ueber seine Konfiguration mitgeliefert.
+opencode bekommt den GitHub-MCP-Server über seine Konfiguration mitgeliefert.
 Bei Claude Code wird er einmalig registriert:
 
 ```bash
@@ -194,21 +194,21 @@ Bei Claude Code wird er einmalig registriert:
 ## Geteilte Befehle
 
 Die Befehle liegen an einer Stelle: `config/commands/<name>.md`. Von dort
-werden sie dorthin eingehaengt, wo beide Agenten nachsehen:
+werden sie dorthin eingehängt, wo beide Agenten nachsehen:
 
-| Agent       | Eingehaengt nach              | Aufruf          |
+| Agent       | Eingehängt nach              | Aufruf          |
 |-------------|-------------------------------|-----------------|
 | opencode    | `~/.config/opencode/commands` | `/plan-item 42` |
 | Claude Code | `~/.claude/commands`          | `/plan-item 42` |
 
 Eine neue Datei in `config/commands/` steht damit sofort in beiden bereit - kein
 Kopieren, kein Rebuild, nur die jeweilige CLI neu starten. Die Verzeichnisse
-sind nur lesend eingehaengt; geaendert wird auf dem Host.
+sind nur lesend eingehängt; geändert wird auf dem Host.
 
-Zusaetzlich liegt zu jedem Befehl eine Huelle unter
-`config/skills/<name>/SKILL.md`, eingehaengt nach `~/.claude/skills` - das liest
-auch opencode (Claude-kompatibel). Sie enthaelt keinen zweiten Text, sondern
-verweist auf dieselbe Datei unter `/opt/agent-commands/`. Dadurch koennen die
+Zusätzlich liegt zu jedem Befehl eine Hülle unter
+`config/skills/<name>/SKILL.md`, eingehängt nach `~/.claude/skills` - das liest
+auch opencode (Claude-kompatibel). Sie enthält keinen zweiten Text, sondern
+verweist auf dieselbe Datei unter `/opt/agent-commands/`. Dadurch können die
 Agenten den Befehl auch von sich aus heranziehen, wenn die Aufgabe passt, statt
 nur auf das getippte `/plan-item` zu reagieren.
 
@@ -218,17 +218,17 @@ Damit eine Datei in beiden funktioniert:
 
 * **Frontmatter** nur mit `description`. `agent:` kennt nur opencode,
   `allowed-tools:` und `argument-hint:` nur Claude Code.
-* **Argumente** mit `$ARGUMENTS`, `$1`, `$2` - das koennen beide.
+* **Argumente** mit `$ARGUMENTS`, `$1`, `$2` - das können beide.
 * Die mitgelieferten Befehle ermitteln ihren Kontext in einem "Schritt 0" per
-  Kommandoblock, den der Agent selbst ausfuehrt. Shell-Einschuebe der Form
-  ``!`git status` `` koennten beide zwar auch direkt, die explizite Variante
-  bleibt aber lesbarer und unabhaengig von der jeweiligen CLI-Version.
+  Kommandoblock, den der Agent selbst ausführt. Shell-Einschübe der Form
+  ``!`git status` `` könnten beide zwar auch direkt, die explizite Variante
+  bleibt aber lesbarer und unabhängig von der jeweiligen CLI-Version.
 
 ### Eine Randnotiz
 
-Claude Code fuehrt Befehle und Skills zusammen, opencode haelt beides getrennt.
+Claude Code führt Befehle und Skills zusammen, opencode hält beides getrennt.
 Deshalb der doppelte Weg: die getippten Befehle funktionieren heute in beiden,
-die Skill-Huellen sind der Weg nach vorn - und beide zeigen auf denselben Text.
+die Skill-Hüllen sind der Weg nach vorn - und beide zeigen auf denselben Text.
 
 
 ## Arbeiten mit Issues
@@ -248,7 +248,7 @@ Im TUI:
 
 Der Agent liest Issue #42 samt Kommentaren, sieht sich den Code an und schreibt
 einen Plan als Kommentar ins Issue. Dessen erste Zeile lautet
-`## Umsetzungsplan` - daran findet ihn der naechste Schritt wieder. Code aendert
+`## Umsetzungsplan` - daran findet ihn der nächste Schritt wieder. Code ändert
 er dabei nicht.
 
 ```
@@ -256,12 +256,12 @@ er dabei nicht.
 ```
 
 Der Agent holt den Plan aus dem Issue, legt `feature/42-<slug>` an, arbeitet die
-Schritte ab, laesst Tests und Linter laufen, committet mit `Refs #42` und
-oeffnet einen Pull Request mit `Closes #42`.
+Schritte ab, lässt Tests und Linter laufen, committet mit `Refs #42` und
+öffnet einen Pull Request mit `Closes #42`.
 
-Beide Befehle liegen als Textdateien in `config/commands/` und gelten fuer beide
-Agenten gleichermassen - siehe [Geteilte Befehle](#geteilte-befehle).
-Aenderungen wirken beim naechsten Start der jeweiligen CLI, ohne Rebuild.
+Beide Befehle liegen als Textdateien in `config/commands/` und gelten für beide
+Agenten gleichermaßen - siehe [Geteilte Befehle](#geteilte-befehle).
+Änderungen wirken beim nächsten Start der jeweiligen CLI, ohne Rebuild.
 
 ### Project-Boards
 
@@ -269,13 +269,13 @@ Die Befehle arbeiten bewusst nur mit Issues. Die Board-Variablen
 (`GITHUB_PROJECT_OWNER`, `GITHUB_PROJECT_NUMBER`, `GITHUB_STATUS_*`) stehen
 weiterhin in der `.env` und werden in den Container gereicht, aktuell aber von
 keinem Befehl ausgewertet. Das Toolset `projects` ist beim MCP-Server ebenfalls
-noch aktiv - die Werkzeuge sind also da, falls spaeter doch ein Board dazukommt.
+noch aktiv - die Werkzeuge sind also da, falls später doch ein Board dazukommt.
 
-## Taeglicher Gebrauch
+## Täglicher Gebrauch
 
 ```bash
 ./sandbox.sh            # hineinspringen  (Windows: .\sandbox.ps1)
-./sandbox.sh opencode   # direkt in die opencode-Oberflaeche
+./sandbox.sh opencode   # direkt in die opencode-Oberfläche
 ./sandbox.sh run go test ./...
 ./sandbox.sh clone owner/repo
 ./sandbox.sh gh pr list
@@ -293,31 +293,73 @@ Soll `./sandbox.sh` ohne Argument sofort opencode starten: in der `.env`
 
 ## Projekte
 
-Standardmaessig wird `./workspace` nach `/work` gemountet. Wer seine Projekte
+Standardmäßig wird `./workspace` nach `/work` gemountet. Wer seine Projekte
 woanders liegen hat, setzt in der `.env` z. B.:
 
 ```
 WORKSPACE_DIR=/Users/...
 ```
 
-Nur dieses Verzeichnis ist fuer den Container sichtbar - das ist der eigentliche
-Sandbox-Effekt. Alles ausserhalb bleibt unerreichbar.
+Nur dieses Verzeichnis ist für den Container sichtbar - das ist der eigentliche
+Sandbox-Effekt. Alles außerhalb bleibt unerreichbar.
 
 ## Was im Image steckt
 
-Debian 12 (slim), Go, Node.js 22, Python 3, dazu git, GitHub CLI, ripgrep, fd,
+Debian 12 (slim), Go, Node.js 22, Python 3, Ruby (rbenv) mit Bundler und Rails, dazu git, GitHub CLI, ripgrep, fd,
 jq, tmux, build-essential, der GitHub-MCP-Server sowie opencode und
-Claude Code. Rust laesst sich mit `INSTALL_RUST=true`
+Claude Code. Rust lässt sich mit `INSTALL_RUST=true`
 zuschalten, einzelne Toolchains mit `INSTALL_NODE=false` usw. abschalten.
-Zusaetzliche Debian-Pakete kommen ueber `EXTRA_APT_PACKAGES` ins Image.
-Nach jeder Aenderung an diesen Schaltern: `./sandbox.sh rebuild`.
+Zusätzliche Debian-Pakete kommen über `EXTRA_APT_PACKAGES` ins Image.
+Nach jeder Änderung an diesen Schaltern: `./sandbox.sh rebuild`.
+
+## Ruby on Rails
+
+Ruby wird beim Bauen des Images über rbenv/ruby-build übersetzt, Bundler und
+das `rails`-Gem kommen gleich mit. Außerdem im Image: die Bibliotheken für
+`sqlite3`, `pg`, `mysql2` und Active Storage (libvips) sowie `psql`.
+
+Schalter in der `.env`:
+
+```
+INSTALL_RUBY=true      # Ruby überhaupt bauen
+RUBY_VERSION=          # leer = neueste stabile Version, sonst z. B. 3.3.6
+INSTALL_RAILS=true     # rails-Gem global installieren
+RAILS_BINDING=0.0.0.0  # Adresse, auf der 'rails server' lauscht
+```
+
+Danach `./sandbox.sh rebuild`. Der Ruby-Build dauert ein paar Minuten.
+
+Ein typischer Ablauf:
+
+```bash
+cd /work
+rails new meine-app          # oder: gh repo clone owner/rails-app
+cd meine-app
+bundle install
+bin/rails server             # bzw. bin/dev
+```
+
+Die App ist dann auf dem Host unter http://localhost:3000 erreichbar.
+`BINDING=0.0.0.0` ist im Container gesetzt, damit Rails nicht nur auf
+`localhost` innerhalb des Containers lauscht.
+
+* **Andere Ruby-Version:** Verlangt ein Projekt per `.ruby-version` eine
+  andere Version, diese im Container mit `rbenv install <version>`
+  nachinstallieren. rbenv wählt sie in dem Projektverzeichnis automatisch.
+  Nachinstallierte Versionen gehen bei einem `rebuild` verloren. Für eine
+  feste Version deshalb besser `RUBY_VERSION` setzen.
+* **Gems:** `bundle install` legt sie unter `~/.bundle/gems` ab, im Volume
+  `sandbox-bundle`. Sie überstehen Rebuilds, getrennt nach Ruby-Version.
+* **Datenbank:** SQLite (Rails-Standard) läuft ohne Weiteres. Für PostgreSQL
+  oder MySQL ist kein Server im Container. Sie müssten als weiterer Dienst in
+  der `compose.yaml` ergänzt werden.
 
 ## Windows
 
 `sandbox.ps1` kann dasselbe wie `sandbox.sh` - dieselben Unterbefehle, dieselbe
 `.env`, dieselbe `compose.yaml`. Zwei Dinge sind zu beachten:
 
-* **Ausfuehrungsrichtlinie.** PowerShell blockiert unsignierte Skripte in der
+* **Ausführungsrichtlinie.** PowerShell blockiert unsignierte Skripte in der
   Voreinstellung. Entweder `sandbox.bat` benutzen (ruft PowerShell mit
   `-ExecutionPolicy Bypass` auf) oder einmalig setzen:
 
@@ -326,33 +368,33 @@ Nach jeder Aenderung an diesen Schaltern: `./sandbox.sh rebuild`.
   ```
 
 * **Zeilenenden.** Die Dateien im Container (`entrypoint.sh`, `Dockerfile`)
-  muessen LF behalten. Die mitgelieferte `.gitattributes` sorgt dafuer, falls der
+  müssen LF behalten. Die mitgelieferte `.gitattributes` sorgt dafür, falls der
   Ordner in ein Git-Repository wandert. Wer die Dateien von Hand bearbeitet:
   Editor auf LF stellen, sonst scheitert der Containerstart mit einer Meldung
   wie `exec format error`.
 
-Pfadangaben in der `.env` duerfen Windows-Schreibweise verwenden, etwa
-`WORKSPACE_DIR=C:/Users/.../Projekte` (Schraegstriche oder doppelte Backslashes).
-Der auskommentierte SSH-Mount in der `compose.yaml` heisst unter Windows
+Pfadangaben in der `.env` dürfen Windows-Schreibweise verwenden, etwa
+`WORKSPACE_DIR=C:/Users/.../Projekte` (Schrägstriche oder doppelte Backslashes).
+Der auskommentierte SSH-Mount in der `compose.yaml` heißt unter Windows
 `${USERPROFILE}/.ssh` statt `${HOME}/.ssh`.
 
 
 ## Abgrenzung und Grenzen der Isolation
 
-* Der Container laeuft als unprivilegierter Nutzer `dev` (UID 1000).
+* Der Container läuft als unprivilegierter Nutzer `dev` (UID 1000).
 * Sichtbar ist nur `WORKSPACE_DIR` sowie `config/opencode`.
 * CPU- und Speichergrenze stehen in der `.env` (`SANDBOX_CPUS`, `SANDBOX_MEMORY`).
 * Die Ports 3000, 5173 und 8000 sind nur an `127.0.0.1` gebunden.
-* `sudo` ist im Container ohne Passwort moeglich (`ENABLE_SUDO=false` schaltet
+* `sudo` ist im Container ohne Passwort möglich (`ENABLE_SUDO=false` schaltet
   das ab). Das betrifft nur den Container, nicht den Mac.
-* Der Container hat vollen ausgehenden Netzzugang - er wird fuer die
+* Der Container hat vollen ausgehenden Netzzugang - er wird für die
   Claude-API und Paketinstallationen gebraucht.
-* Kein Docker-Socket ist eingehaengt: aus der Sandbox heraus lassen sich keine
+* Kein Docker-Socket ist eingehängt: aus der Sandbox heraus lassen sich keine
   Container auf dem Mac starten.
 * `ANTHROPIC_API_KEY` liegt nur in der `.env` und als Umgebungsvariable im
   laufenden Container. Wer stattdessen die Abo-Anmeldung nutzt, hat gar keinen
-  Schluessel auf der Platte - die Sitzungstoken liegen dann in den Volumes.
+  Schlüssel auf der Platte - die Sitzungstoken liegen dann in den Volumes.
 * Das GitHub-Token liegt nur in der `.env` und als Umgebungsvariable im
   laufenden Container, nicht im Image. Es reicht so weit, wie seine Rechte
-  reichen - fuer eine engere Grenze ein fine-grained Token auf die betroffenen
+  reichen - für eine engere Grenze ein fine-grained Token auf die betroffenen
   Repositories ausstellen.

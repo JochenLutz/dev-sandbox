@@ -23,6 +23,9 @@ ARG INSTALL_PYTHON=true
 ARG INSTALL_GO=true
 ARG GO_VERSION=
 ARG INSTALL_RUST=false
+ARG INSTALL_RUBY=true
+ARG RUBY_VERSION=
+ARG INSTALL_RAILS=true
 ARG ENABLE_SUDO=true
 ARG INSTALL_OPENCODE=true
 ARG OPENCODE_VERSION=
@@ -168,14 +171,59 @@ RUN set -eux; \
              /home/dev/.local/bin \
              /home/dev/.npm-global/bin \
              /home/dev/.cache \
+             /home/dev/.bundle \
              /home/dev/go/pkg; \
     chown -R "${USER_UID}:${USER_GID}" /work /home/dev /opt/agent-commands
 
 ENV HOME=/home/dev \
     GOPATH=/home/dev/go \
     CLAUDE_CONFIG_DIR=/home/dev/.claude \
-    PATH=/home/dev/.npm-global/bin:/home/dev/.local/bin:/home/dev/go/bin:/usr/local/go/bin:/usr/local/cargo/bin:/usr/local/bin:/usr/bin:/bin \
+    RBENV_ROOT=/usr/local/rbenv \
+    BUNDLE_PATH=/home/dev/.bundle/gems \
+    PATH=/usr/local/rbenv/shims:/usr/local/rbenv/bin:/home/dev/.npm-global/bin:/home/dev/.local/bin:/home/dev/go/bin:/usr/local/go/bin:/usr/local/cargo/bin:/usr/local/bin:/usr/bin:/bin \
     NPM_CONFIG_PREFIX=/home/dev/.npm-global
+
+# ---------------------------------------------------------------- Ruby / Rails
+# Ruby wird ueber rbenv + ruby-build gebaut. RBENV_ROOT gehoert dev, damit im
+# Container weitere Versionen nachinstalliert werden koennen, wenn ein Projekt
+# per .ruby-version etwas anderes verlangt:  rbenv install 3.3.6
+# Leeres RUBY_VERSION = neueste stabile Version, die ruby-build kennt.
+# Die Bibliotheken decken die gaengigen Rails-Gems ab: sqlite3, pg, mysql2,
+# psych (libyaml) und Active Storage (libvips).
+RUN set -eux; \
+    if [ "${INSTALL_RUBY}" = "true" ]; then \
+      apt-get update; \
+      apt-get install -y --no-install-recommends \
+        autoconf patch libssl-dev libyaml-dev libreadline-dev zlib1g-dev \
+        libgmp-dev libffi-dev libgdbm-dev libncurses5-dev uuid-dev \
+        libsqlite3-dev sqlite3 libpq-dev postgresql-client \
+        default-libmysqlclient-dev libvips42; \
+      rm -rf /var/lib/apt/lists/*; \
+      git clone --depth 1 https://github.com/rbenv/rbenv.git "${RBENV_ROOT}"; \
+      git clone --depth 1 https://github.com/rbenv/ruby-build.git "${RBENV_ROOT}/plugins/ruby-build"; \
+      chown -R "${USER_UID}:${USER_GID}" "${RBENV_ROOT}"; \
+      printf 'export RBENV_ROOT=%s\neval "$(rbenv init - bash)"\n' "${RBENV_ROOT}" \
+        > /etc/profile.d/rbenv.sh; \
+      chmod 0644 /etc/profile.d/rbenv.sh; \
+    fi
+
+USER dev
+RUN set -eux; \
+    if [ "${INSTALL_RUBY}" = "true" ]; then \
+      ver="${RUBY_VERSION}"; \
+      if [ -z "${ver}" ]; then \
+        ver="$(rbenv install --list 2>/dev/null | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | tail -n1)"; \
+      fi; \
+      RUBY_CONFIGURE_OPTS=--disable-install-doc MAKE_OPTS="-j$(nproc)" rbenv install "${ver}"; \
+      rbenv global "${ver}"; \
+      echo 'gem: --no-document' > /home/dev/.gemrc; \
+      gem install bundler; \
+      if [ "${INSTALL_RAILS}" = "true" ]; then gem install rails; fi; \
+      rbenv rehash; \
+      ruby --version; bundle --version; \
+      if [ "${INSTALL_RAILS}" = "true" ]; then rails --version; fi; \
+    fi
+USER root
 
 # Wichtig: absolute Rechte setzen, nicht "chmod +x". COPY uebernimmt die
 # Rechte der Quelldatei vom Host - liegt sie dort als 0600/0700, waere das

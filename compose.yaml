@@ -15,6 +15,9 @@ services:
         INSTALL_GO: ${INSTALL_GO:-true}
         GO_VERSION: ${GO_VERSION:-}
         INSTALL_RUST: ${INSTALL_RUST:-false}
+        INSTALL_RUBY: ${INSTALL_RUBY:-true}
+        RUBY_VERSION: ${RUBY_VERSION:-}
+        INSTALL_RAILS: ${INSTALL_RAILS:-true}
         ENABLE_SUDO: ${ENABLE_SUDO:-true}
         INSTALL_OPENCODE: ${INSTALL_OPENCODE:-true}
         OPENCODE_VERSION: ${OPENCODE_VERSION:-}
@@ -50,6 +53,9 @@ services:
       GIT_USER_NAME: ${GIT_USER_NAME:-}
       GIT_USER_EMAIL: ${GIT_USER_EMAIL:-}
       GIT_DEFAULT_BRANCH: ${GIT_DEFAULT_BRANCH:-main}
+      # Rails lauscht im Development-Modus sonst nur auf localhost im
+      # Container - dann kaeme Port 3000 auf dem Host nicht an
+      BINDING: ${RAILS_BINDING:-0.0.0.0}
       # GitHub: ein Token fuer gh, git und den MCP-Server
       GITHUB_PERSONAL_ACCESS_TOKEN: ${GITHUB_PERSONAL_ACCESS_TOKEN:-}
       GH_TOKEN: ${GITHUB_PERSONAL_ACCESS_TOKEN:-}
@@ -92,6 +98,8 @@ services:
       - sandbox-cache:/home/dev/.cache
       - sandbox-go:/home/dev/go/pkg
       - sandbox-npm:/home/dev/.npm-global
+      # Gems aus 'bundle install' ueberstehen Rebuilds (Unterordner je Ruby-Version)
+      - sandbox-bundle:/home/dev/.bundle
       # gh-CLI-Zustand (eigene Anmeldung per 'gh auth login') bleibt erhalten
       - gh-config:/home/dev/.config/gh
       # Optional: SSH-Keys des Macs nur lesend einhaengen (bei Bedarf einkommentieren)
@@ -113,4 +121,5 @@ volumes:
   sandbox-cache:
   sandbox-go:
   sandbox-npm:
+  sandbox-bundle:
   gh-config:
